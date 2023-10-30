@@ -1,0 +1,3 @@
+--static objects.
+--dynamic objects.
+--explosive artefacts.
