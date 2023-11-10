@@ -41,18 +41,18 @@ function love.load()
     enemy1.fixture:setUserData("platform")
 
     trigger1 = {}
-    trigger1.body = love.physics.newBody(world, 700, enemy1.body:getY() - 100, "static")
+    trigger1.body = love.physics.newBody(world, 700, enemy1.body:getY() - 50, "static") -- 
     trigger1.shape = love.physics.newRectangleShape(150, 10)
     trigger1.fixture = love.physics.newFixture(trigger1.body, trigger1.shape, 2)
     trigger1.fixture:setSensor(true)
-    trigger1.fixture:setUserData("endlevel1")
+    trigger1.fixture:setUserData("endlevel1") -- trigger na cabeça
 
     trigger2 = {}
     trigger2.body = love.physics.newBody(world, enemy1.body:getX() - 75, 500, "static")
     trigger2.shape = love.physics.newRectangleShape(10, 150)
     trigger2.fixture = love.physics.newFixture(trigger2.body, trigger2.shape, 2)
     trigger2.fixture:setSensor(true)
-    trigger2.fixture:setUserData("endlevel2")
+    trigger2.fixture:setUserData("endlevel2") -- trigger de lado
 
     player = {}
     player.body = love.physics.newBody(world, 200, 100, "dynamic")
@@ -71,15 +71,15 @@ function BeginContact(fixtureA, fixtureB, contact)
         if normal.y == -1 then
             player.onground = true
         end
-        if fixtureA:getUserData() == "endlevel2" and fixtureB:getUserData() == "player" then
-            dead_enemy = false
-            player_alive = false
-        end
+    end
         if fixtureA:getUserData() == "endlevel1" and fixtureB:getUserData() == "player" then
             dead_enemy = true
             player_alive = true
+        elseif fixtureA:getUserData() == "endlevel2" and fixtureB:getUserData() == "player" then
+            dead_enemy = false
+            player_alive = false
         end
-    end
+    
 end
 
 function love.update(dt)
@@ -128,7 +128,7 @@ function love.keyreleased(key)
 end
 
 function love.draw()
-    if not dead_enemy then
+    if not dead_enemy and player_alive then
         love.graphics.setColor(1, 1, 1)
         love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))
 
@@ -139,10 +139,14 @@ function love.draw()
         love.graphics.polygon("fill", enemy1.body:getWorldPoints(enemy1.shape:getPoints()))
 
         love.graphics.setColor(1, 1, 1)
-        love.graphics.polygon("fill", trigger1.body:getWorldPoints(trigger1.shape:getPoints()))
-        love.graphics.polygon("fill", trigger2.body:getWorldPoints(trigger2.shape:getPoints()))
-    else    
+        -- love.graphics.polygon("fill", trigger1.body:getWorldPoints(trigger1.shape:getPoints()))
+        -- love.graphics.polygon("fill", trigger2.body:getWorldPoints(trigger2.shape:getPoints()))
+    end
+    if dead_enemy == true and player_alive == true then
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("You Win!", 350, 300)
+    elseif not dead_enemy and player_alive == false then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print("You Lose!", 350, 300)
     end
 end
