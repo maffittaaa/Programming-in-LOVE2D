@@ -1,6 +1,6 @@
 require "vector2"
 require "player"
-require "enemy"
+require "ghostenemy"
 Camera = require "Camera"
 
 local world
@@ -10,6 +10,8 @@ local speed
 local height
 local width
 
+local enemy_alive = true
+local player_alive = true
 
 function love.keypressed(e)
     if e == 'escape' then
@@ -19,12 +21,12 @@ end
 
 function love.load()
     love.physics.setMeter(30)
-    world = love.physics.newWorld(0, 9.81 * love.physics.getMeter(), true)
+    world = love.physics.newWorld(0, 0, true)
+    world:setCallbacks(BeginContact, nil, nil, nil)
 
-    love.window.setMode(1920, 1080)
-    height = love.graphics.getHeight()
-    width = love.graphics.getWidth()
-
+    -- love.window.setMode(1920, 1080)
+    -- height = love.graphics.getHeight()
+    -- width = love.graphics.getWidth()
     sprites = {}
     sprites.background = love.graphics.newImage("background5.jpg")
 
@@ -34,6 +36,23 @@ function love.load()
     camera = Camera()
 end
 
+function BeginContact(fixtureA, fixtureB)
+    if enemy.isChasing == true and enemy.playerInSight == true then
+        if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "melee attack" and player.health <= 5 and player.health > 0 then
+            print(fixtureA:getUserData(), fixtureB:getUserData())
+            player.health = player.health - 1
+            print("Player health = " .. player.health)
+            if player.health <= 0 then
+                enemy.isChasing = false
+                player.patroling = true
+                enemy_alive = true
+                player_alive = false
+            end
+        end
+        -- elseif fixtureA:getUserData() == "melee_attack" and fixtureB:getUserData() == "player" then
+    end
+end
+
 function love.update(dt)
     world:update(dt)
     camera:update(dt)
@@ -41,6 +60,7 @@ function love.update(dt)
     camera:setFollowLerp(0.2)
     camera:setFollowLead(0)
     camera:setFollowStyle('TOPDOWN')
+    trigger.body:setPosition(enemy.position.x, enemy.position.y)
     UpdatePlayer(dt)
     UpdateEnemy(dt, world)
 end
@@ -48,7 +68,7 @@ end
 function love.draw()
     camera:attach()
     love.graphics.draw(sprites.background, 0, 0)
-    DrawPlayer()
     DrawEnemy()
+    DrawPlayer()
     camera:detach()
 end
