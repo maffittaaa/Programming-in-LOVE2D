@@ -1,6 +1,7 @@
 require "vector2"
 require "player"
 require "ghostenemy"
+require "healthbar"
 Camera = require "Camera"
 
 local world
@@ -11,7 +12,7 @@ local height
 local width
 
 local enemy_alive = true
-local player_alive = true
+player_alive = true
 
 function love.keypressed(e)
     if e == 'escape' then
@@ -30,6 +31,7 @@ function love.load()
     sprites = {}
     sprites.background = love.graphics.newImage("background5.jpg")
 
+    -- LoadHealthBars()
     LoadPlayer(world)
     LoadEnemy(world)
 
@@ -61,6 +63,7 @@ function love.update(dt)
     camera:setFollowLead(0)
     camera:setFollowStyle('TOPDOWN')
     trigger.body:setPosition(enemy.position.x, enemy.position.y)
+    UpdateHealthBars()
     UpdatePlayer(dt)
     UpdateEnemy(dt, world)
 end
@@ -68,7 +71,8 @@ end
 function love.draw()
     camera:attach()
     love.graphics.draw(sprites.background, 0, 0)
-    DrawEnemy()
+    DrawHealthBars()
     DrawPlayer()
+    DrawEnemy()
     camera:detach()
 end

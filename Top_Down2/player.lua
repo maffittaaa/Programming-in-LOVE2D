@@ -3,6 +3,7 @@ player = {}
 
 destroy_fixture = false
 
+
 function LoadPlayer(world)
     player.sprite = love.graphics.newImage("Main_character2.jpg")
     player.body = love.physics.newBody(world, 400, 100, "dynamic")
@@ -13,10 +14,18 @@ function LoadPlayer(world)
     player.body:setFixedRotation(true)
     player.health = 5
     player.fixture:setUserData("player")
+    -- if player_alive == true then
+    --     player.healthbar = vector2.new(player.body:getX(), player.body:getY() + 60)
+    -- end
 end
 
 function UpdatePlayer(dt)
     player.position = vector2.new(player.body:getPosition())
+    -- if player_alive == true then
+    --     -- player.healthbar = vector2.new(player.body:getX() - 35, player.body:getY() - 60)
+    --     -- else
+    --     --     player.healthbar:destroy_fixture()
+    -- end
 
     local playerVelocity = vector2.new(0, 0)
 
@@ -34,6 +43,8 @@ function UpdatePlayer(dt)
 end
 
 function DrawPlayer()
+    -- love.graphics.setColor(1, 0, 0)
+    -- love.graphics.rectangle("fill", player.healthbar.x, player.healthbar.y, 14 * player.health, 5)
     if player.health <= 5 and player.health > 0 then
         love.graphics.draw(player.sprite, player.body:getX(), player.body:getY(), player.body:getAngle(),
             1, 1, player.sprite:getWidth() / 2, player.sprite:getHeight() / 2)

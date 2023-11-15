@@ -22,7 +22,7 @@ function LoadEnemy(world)
     enemy.body:setFixedRotation(true)
     enemy.position = vector2.new(enemy.body:getPosition())
     enemy.health = 4
-    enemy.healthbar = vector2.new(enemy.body:getX(), enemy.body:getY() + 60)
+    -- enemy.healthbar = vector2.new(enemy.body:getX(), enemy.body:getY() + 60)
 
     enemyRange = {}
     enemyRange.body = love.physics.newBody(world, enemy.body:getX(), enemy.body:getY(), "dynamic")
@@ -37,7 +37,7 @@ end
 
 function UpdateEnemy(dt)
     enemy.position = vector2.new(enemy.body:getPosition())
-    enemy.healthbar = vector2.new(enemy.body:getX() - 35, enemy.body:getY() - 60)
+    -- enemy.healthbar = vector2.new(enemy.body:getX() - 35, enemy.body:getY() - 60)
 
     enemyRange.body:setPosition(enemy.body:getX(), enemy.body:getY())
     enemy.range = vector2.mag(vector2.sub(enemy.position, player.position))
@@ -115,11 +115,11 @@ function DrawEnemy()
     love.graphics.setColor(1, 1, 1)
     love.graphics.polygon("fill", enemy.body:getWorldPoints(enemy.shape:getPoints()))
 
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 70, 10)
+    -- love.graphics.setColor(1, 1, 1)
+    -- love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 70, 10)
 
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 17.5 * enemy.health, 4)
+    -- love.graphics.setColor(1, 0, 0)
+    -- love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 17.5 * enemy.health, 4)
 
     love.graphics.setColor(0, 1, 0)
     love.graphics.polygon("line", trigger.body:getWorldPoints(trigger.shape:getPoints()))
