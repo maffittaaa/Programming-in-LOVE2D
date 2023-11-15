@@ -1,12 +1,12 @@
 require "vector2"
 require "player"
-require "ghostenemy"
+require "ghost"
 require "healthbar"
+require "sprites"
 Camera = require "Camera"
 
 local world
 local ground
-local sprites
 local speed
 local height
 local width
@@ -24,14 +24,13 @@ function love.load()
     love.physics.setMeter(30)
     world = love.physics.newWorld(0, 0, true)
     world:setCallbacks(BeginContact, nil, nil, nil)
-
+    
     -- love.window.setMode(1920, 1080)
     -- height = love.graphics.getHeight()
     -- width = love.graphics.getWidth()
-    sprites = {}
-    sprites.background = love.graphics.newImage("background5.jpg")
-
+    
     -- LoadHealthBars()
+    LoadSprites()
     LoadPlayer(world)
     LoadEnemy(world)
 
@@ -62,7 +61,6 @@ function love.update(dt)
     camera:setFollowLerp(0.2)
     camera:setFollowLead(0)
     camera:setFollowStyle('TOPDOWN')
-    trigger.body:setPosition(enemy.position.x, enemy.position.y)
     UpdateHealthBars()
     UpdatePlayer(dt)
     UpdateEnemy(dt, world)

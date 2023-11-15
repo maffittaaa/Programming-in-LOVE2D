@@ -5,7 +5,7 @@ enemy = {}
 trigger = {}
 local enemyRange
 local enemyx_patrolling
-local is_forward_backwards
+local is_forward_backwards --11
 local lastPposition
 local time = 0
 
@@ -38,6 +38,7 @@ end
 function UpdateEnemy(dt)
     enemy.position = vector2.new(enemy.body:getPosition())
     -- enemy.healthbar = vector2.new(enemy.body:getX() - 35, enemy.body:getY() - 60)
+    trigger.body:setPosition(enemy.position.x, enemy.position.y)
 
     enemyRange.body:setPosition(enemy.body:getX(), enemy.body:getY())
     enemy.range = vector2.mag(vector2.sub(enemy.position, player.position))

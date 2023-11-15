@@ -1,6 +1,6 @@
 require "vector2"
 require "player"
-require "ghostenemy"
+require "ghost"
 
 healthbar = {}
 
