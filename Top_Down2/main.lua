@@ -3,6 +3,7 @@ require "player"
 require "ghost"
 require "healthbar"
 require "sprites"
+require "player_attacking"
 Camera = require "Camera"
 
 local world
@@ -11,12 +12,19 @@ local speed
 local height
 local width
 
-local enemy_alive = true
+enemy_alive = true
 player_alive = true
 
 function love.keypressed(e)
     if e == 'escape' then
         love.event.quit()
+    end
+    if e == 'e' then
+        if sword.body:isAwake(true) then
+            sword.body:setAwake(false)
+        else
+            sword.body:setAwake(true)
+        end
     end
 end
 
@@ -24,14 +32,14 @@ function love.load()
     love.physics.setMeter(30)
     world = love.physics.newWorld(0, 0, true)
     world:setCallbacks(BeginContact, nil, nil, nil)
-    
+
     -- love.window.setMode(1920, 1080)
     -- height = love.graphics.getHeight()
     -- width = love.graphics.getWidth()
-    
-    -- LoadHealthBars()
+
     LoadSprites()
     LoadPlayer(world)
+    LoadPlayerAttack(world)
     LoadEnemy(world)
 
     camera = Camera()
@@ -50,7 +58,15 @@ function BeginContact(fixtureA, fixtureB)
                 player_alive = false
             end
         end
-        -- elseif fixtureA:getUserData() == "melee_attack" and fixtureB:getUserData() == "player" then
+    end
+    print(fixtureA:getUserData(), fixtureB:getUserData())
+    if fixtureA:getUserData() == "melee weapon" and fixtureB:getUserData() == "melee attack" and enemy.health <= 4 and enemy.health > 0 then
+        enemy.health = enemy.health - 1
+        print("Enemy health = " .. enemy.health)
+        if enemy.health <= 0 then
+            player_alive = true
+            enemy_alive = false
+        end
     end
 end
 
@@ -63,14 +79,22 @@ function love.update(dt)
     camera:setFollowStyle('TOPDOWN')
     UpdateHealthBars()
     UpdatePlayer(dt)
+    UpdatePlayerAttack()
     UpdateEnemy(dt, world)
 end
+
+-- function love.keyreleased(key)
+--     if (key == "e") then
+--         sword.body:setAwake(false)
+--     end
+-- end
 
 function love.draw()
     camera:attach()
     love.graphics.draw(sprites.background, 0, 0)
-    DrawHealthBars()
     DrawPlayer()
+    DrawHealthBars()
+    DrawPlayerAttack()
     DrawEnemy()
     camera:detach()
 end

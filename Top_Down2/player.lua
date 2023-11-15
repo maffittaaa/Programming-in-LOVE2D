@@ -2,7 +2,7 @@ require "vector2"
 require "sprites"
 player = {}
 
-destroy_fixture = false
+destroy_player_fixture = false
 
 
 function LoadPlayer(world)
@@ -43,9 +43,9 @@ function DrawPlayer()
     elseif player.health <= 0 then
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("LOSER! YOU ARE DEAD", 500, 500)
-        if destroy_fixture == false then
+        if destroy_player_fixture == false then
             player.fixture:destroy()
-            destroy_fixture = true
+            destroy_player_fixture = true
         end
         player.body:setLinearVelocity(0, 0)
     end

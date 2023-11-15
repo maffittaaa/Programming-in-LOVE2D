@@ -9,6 +9,8 @@ local is_forward_backwards --11
 local lastPposition
 local time = 0
 
+local destroy_enemy_fixture = false
+
 function LoadEnemy(world)
     enemy.body = love.physics.newBody(world, enemyx_patrolling, 100, "dynamic")
     enemy.shape = love.physics.newRectangleShape(30, 60)
@@ -22,7 +24,6 @@ function LoadEnemy(world)
     enemy.body:setFixedRotation(true)
     enemy.position = vector2.new(enemy.body:getPosition())
     enemy.health = 4
-    -- enemy.healthbar = vector2.new(enemy.body:getX(), enemy.body:getY() + 60)
 
     enemyRange = {}
     enemyRange.body = love.physics.newBody(world, enemy.body:getX(), enemy.body:getY(), "dynamic")
@@ -37,14 +38,20 @@ end
 
 function UpdateEnemy(dt)
     enemy.position = vector2.new(enemy.body:getPosition())
-    -- enemy.healthbar = vector2.new(enemy.body:getX() - 35, enemy.body:getY() - 60)
     trigger.body:setPosition(enemy.position.x, enemy.position.y)
 
     enemyRange.body:setPosition(enemy.body:getX(), enemy.body:getY())
     enemy.range = vector2.mag(vector2.sub(enemy.position, player.position))
-    if destroy_fixture == true then
+    if destroy_player_fixture == true then
         enemy.patroling = true
         enemy.playerInSight = false
+    end
+
+    if destroy_enemy_fixture == true then
+        enemy_alive = false
+        enemy.isChasing = false
+        enemy.patroling = false
+        enemy.fixture:destroy()
     end
 
     if enemy.patroling == true then
@@ -113,18 +120,18 @@ function UpdateEnemy(dt)
 end
 
 function DrawEnemy()
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.polygon("fill", enemy.body:getWorldPoints(enemy.shape:getPoints()))
+    if enemy.health <= 4 and enemy.health > 0 then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.polygon("fill", enemy.body:getWorldPoints(enemy.shape:getPoints()))
 
-    -- love.graphics.setColor(1, 1, 1)
-    -- love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 70, 10)
+        love.graphics.setColor(0, 1, 0)
+        love.graphics.polygon("line", trigger.body:getWorldPoints(trigger.shape:getPoints()))
 
-    -- love.graphics.setColor(1, 0, 0)
-    -- love.graphics.rectangle("fill", enemy.healthbar.x, enemy.healthbar.y, 17.5 * enemy.health, 4)
-
-    love.graphics.setColor(0, 1, 0)
-    love.graphics.polygon("line", trigger.body:getWorldPoints(trigger.shape:getPoints()))
-
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.circle("line", enemyRange.body:getX(), enemyRange.body:getY(), enemyRange.shape:getRadius())
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.circle("line", enemyRange.body:getX(), enemyRange.body:getY(), enemyRange.shape:getRadius())
+    elseif enemy.health <= 0 then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print("WINNER! YOU STAYED ALIVE", 500, 500)
+        enemy.body:setLinearVelocity(0, 0)
+    end
 end
