@@ -33,7 +33,7 @@ function LoadEnemy(world)
     trigger.shape = love.physics.newRectangleShape(40, 70)
     trigger.fixture = love.physics.newFixture(trigger.body, trigger.shape, 2)
     trigger.fixture:setSensor(true)
-    trigger.fixture:setUserData("melee attack") -- trigger de lado
+    trigger.fixture:setUserData("attack") -- trigger de lado
 end
 
 function UpdateEnemy(dt)
@@ -45,13 +45,6 @@ function UpdateEnemy(dt)
     if destroy_player_fixture == true then
         enemy.patroling = true
         enemy.playerInSight = false
-    end
-
-    if destroy_enemy_fixture == true then
-        enemy_alive = false
-        enemy.isChasing = false
-        enemy.patroling = false
-        enemy.fixture:destroy()
     end
 
     if enemy.patroling == true then
@@ -133,5 +126,11 @@ function DrawEnemy()
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("WINNER! YOU STAYED ALIVE", 500, 500)
         enemy.body:setLinearVelocity(0, 0)
+        if destroy_enemy_fixture == true then
+            enemy.isChasing = false
+            enemy.patroling = false
+            enemy.fixture:destroy()
+            trigger.fixture:destroy()
+        end
     end
 end

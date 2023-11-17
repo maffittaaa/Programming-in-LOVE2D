@@ -3,7 +3,8 @@ require "player"
 require "ghost"
 require "healthbar"
 require "sprites"
-require "player_attacking"
+require "player_sword"
+-- require "ghost_attack"
 Camera = require "Camera"
 
 local world
@@ -12,18 +13,15 @@ local speed
 local height
 local width
 
-enemy_alive = true
-player_alive = true
-
 function love.keypressed(e)
     if e == 'escape' then
         love.event.quit()
     end
     if e == 'e' then
-        if sword.body:isAwake(true) then
-            sword.body:setAwake(false)
+        if sword.body:isActive() then
+            sword.body:setActive(false)
         else
-            sword.body:setAwake(true)
+            sword.body:setActive(true)
         end
     end
 end
@@ -47,27 +45,28 @@ end
 
 function BeginContact(fixtureA, fixtureB)
     if enemy.isChasing == true and enemy.playerInSight == true then
-        if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "melee attack" and player.health <= 5 and player.health > 0 then
+        if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "attack" and player.health <= 5 and player.health > 0 then
             print(fixtureA:getUserData(), fixtureB:getUserData())
             player.health = player.health - 1
             print("Player health = " .. player.health)
             if player.health <= 0 then
                 enemy.isChasing = false
                 player.patroling = true
-                enemy_alive = true
-                player_alive = false
             end
         end
     end
-    print(fixtureA:getUserData(), fixtureB:getUserData())
-    if fixtureA:getUserData() == "melee weapon" and fixtureB:getUserData() == "melee attack" and enemy.health <= 4 and enemy.health > 0 then
-        enemy.health = enemy.health - 1
-        print("Enemy health = " .. enemy.health)
-        if enemy.health <= 0 then
-            player_alive = true
-            enemy_alive = false
+    if enemy.health <= 4 and enemy.health > 0 then
+        if fixtureA:getUserData() == "melee weapon" and fixtureB:getUserData() == "attack" and enemy.health <= 4 and enemy.health > 0 then
+            print(fixtureA:getUserData(), fixtureB:getUserData())
+            enemy.health = enemy.health - 1
+            print("Enemy health = " .. enemy.health)
+        end
+        if fixtureA:getUserData() == "attack" and fixtureB:getUserData() == "player" then
+            enemy.body:applyLinearImpulse(player.body:getX(), player.body:getY())
+            player.body:applyLinearImpulse(-(player.body:getX()), player.body:getY())
         end
     end
+    
 end
 
 function love.update(dt)
@@ -81,6 +80,7 @@ function love.update(dt)
     UpdatePlayer(dt)
     UpdatePlayerAttack()
     UpdateEnemy(dt, world)
+    -- UpdateGhostAttack()
 end
 
 -- function love.keyreleased(key)
@@ -93,8 +93,8 @@ function love.draw()
     camera:attach()
     love.graphics.draw(sprites.background, 0, 0)
     DrawPlayer()
-    DrawHealthBars()
     DrawPlayerAttack()
+    DrawHealthBars()
     DrawEnemy()
     camera:detach()
 end

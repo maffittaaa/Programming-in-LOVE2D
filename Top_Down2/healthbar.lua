@@ -15,7 +15,7 @@ function UpdateHealthBars()
 end
 
 function DrawHealthBars()
-    if player_alive == true then
+    if player.health <= 5 and player.health > 0 then
         love.graphics.setColor(1, 1, 1)
         love.graphics.rectangle("fill", healthbar.player.x, healthbar.player.y, 70, 10)
         love.graphics.setColor(1, 0, 0)
@@ -29,7 +29,7 @@ function DrawHealthBars()
             end
         end
     end
-    if enemy_alive == true then
+    if enemy.health <= 5 and enemy.health > 0 then
         love.graphics.setColor(1, 1, 1)
         love.graphics.rectangle("fill", healthbar.enemy.x, healthbar.enemy.y, 70, 10)
         love.graphics.setColor(1, 0, 0)

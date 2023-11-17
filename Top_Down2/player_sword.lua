@@ -22,7 +22,7 @@ function LoadPlayerAttack(world)
     sword.fixture = love.physics.newFixture(sword.body, sword.shape, 2)
     sword.body:setFixedRotation(true)
     sword.fixture:setUserData("melee weapon")
-    sword.body:setAwake(false)
+    sword.body:setActive(false)
 end
 
 function UpdatePlayerAttack()
@@ -32,7 +32,7 @@ function UpdatePlayerAttack()
 end
 
 function DrawPlayerAttack()
-    if sword.body:isAwake(true) then
+    if sword.body:isActive() then
         love.graphics.draw(sprites.sword, sword.body:getX(), sword.body:getY(), sword.body:getAngle(),
             1, 1, sprites.sword:getWidth() / 2, sprites.sword:getHeight() / 2)
     end
