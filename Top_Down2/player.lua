@@ -38,8 +38,14 @@ end
 
 function DrawPlayer()
     if player.health <= 5 and player.health > 0 then
-        love.graphics.draw(sprites.player, player.body:getX(), player.body:getY(), player.body:getAngle(),
+        local velx, vely =  player.body:getLinearVelocity()
+        if velx >= 0 then
+            love.graphics.draw(sprites.player, player.body:getX(), player.body:getY(), player.body:getAngle(),
             1, 1, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
+        else
+            love.graphics.draw(sprites.player, player.body:getX(), player.body:getY(), player.body:getAngle(),
+            -1, 1, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
+        end
     elseif player.health <= 0 then
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("LOSER! YOU ARE DEAD", 500, 500)

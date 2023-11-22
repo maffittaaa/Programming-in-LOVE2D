@@ -12,6 +12,8 @@ local ground
 local speed
 local height
 local width
+timer = 10
+hitplayer = false
 
 function love.keypressed(e)
     if e == 'escape' then
@@ -47,6 +49,7 @@ function BeginContact(fixtureA, fixtureB)
     if enemy.isChasing == true and enemy.playerInSight == true then
         if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "attack" and player.health <= 5 and player.health > 0 then
             print(fixtureA:getUserData(), fixtureB:getUserData())
+            hitplayer = true
             player.health = player.health - 1
             print("Player health = " .. player.health)
             if player.health <= 0 then
@@ -56,14 +59,14 @@ function BeginContact(fixtureA, fixtureB)
         end
     end
     if enemy.health <= 4 and enemy.health > 0 then
-        if fixtureA:getUserData() == "melee weapon" and fixtureB:getUserData() == "attack" and enemy.health <= 4 and enemy.health > 0 then
+        if fixtureA:getUserData() == "attack" and fixtureB:getUserData() == "melee weapon" then
             print(fixtureA:getUserData(), fixtureB:getUserData())
             enemy.health = enemy.health - 1
             print("Enemy health = " .. enemy.health)
         end
         if fixtureA:getUserData() == "attack" and fixtureB:getUserData() == "player" then
-            enemy.body:applyLinearImpulse(player.body:getX(), player.body:getY())
-            player.body:applyLinearImpulse(-(player.body:getX()), player.body:getY())
+            local force = vector2.mult(playerDiretion, 200)
+            enemy.body:setLinearVelocity(-force.x, -force.y)
         end
     end
     
@@ -76,6 +79,9 @@ function love.update(dt)
     camera:setFollowLerp(0.2)
     camera:setFollowLead(0)
     camera:setFollowStyle('TOPDOWN')
+    if hitplayer == true then        
+        timer = timer - (1 * dt)
+    end
     UpdateHealthBars()
     UpdatePlayer(dt)
     UpdatePlayerAttack()

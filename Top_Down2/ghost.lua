@@ -22,6 +22,7 @@ function LoadEnemy(world)
     enemy.playerInSight = true
     enemy.fixture:setFriction(10)
     enemy.body:setFixedRotation(true)
+    enemy.fixture:setRestitution(3)
     enemy.position = vector2.new(enemy.body:getPosition())
     enemy.health = 4
 
@@ -96,10 +97,17 @@ function UpdateEnemy(dt)
                 end
                 return
             elseif lastPos > 1 then
-                local playerDiretion = vector2.sub(lastPposition, vector2.new(enemy.body:getPosition()))
+                if timer < 10 then
+                playerDiretion = vector2.sub(lastPposition, vector2.new(enemy.body:getPosition()))
                 playerDiretion = vector2.norm(playerDiretion)
                 local force = vector2.mult(playerDiretion, 200)
                 enemy.body:setLinearVelocity(force.x, force.y)
+                elseif timer > 10 and hitplayer == true then
+                    playerDiretion = vector2.sub(lastPposition, vector2.new(enemy.body:getPosition()))
+                    playerDiretion = vector2.norm(playerDiretion)
+                    local force = vector2.mult(playerDiretion, 200)
+                    enemy.body:setLinearVelocity(-force.x, -force.y)
+                end
             end
         elseif enemy.isChasing == true then
             --Follow player
@@ -131,6 +139,8 @@ function DrawEnemy()
             enemy.patroling = false
             enemy.fixture:destroy()
             trigger.fixture:destroy()
+            enemy.body:destroy()
+            destroy_enemy_fixture = false
         end
     end
 end
