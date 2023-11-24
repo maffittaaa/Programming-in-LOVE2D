@@ -1,6 +1,7 @@
 require "vector2"
 require "sprites"
 player = {}
+local force = 500
 
 destroy_player_fixture = false
 
@@ -10,9 +11,13 @@ function LoadPlayer(world)
     player.shape = love.physics.newRectangleShape(sprites.player:getWidth(), sprites.player:getHeight())
     player.fixture = love.physics.newFixture(player.body, player.shape, 1)
     player.maxvelocity = 200
-    player.fixture:setFriction(1)
+    player.fixture:setFriction(0.5)
     player.body:setFixedRotation(true)
+    player.fixture:setCategory(2)
+    player.fixture:setMask(2) 
     player.health = 5
+    player.knockX = 0
+    player.knockY = 0
     player.fixture:setUserData("player")
 end
 
@@ -33,7 +38,18 @@ function UpdatePlayer(dt)
         playerVelocity.y = playerVelocity.y + 250
     end
 
-    player.body:setLinearVelocity(playerVelocity.x, playerVelocity.y)
+    -- Passar isto para uma funcao no futuro :(
+    if player.knockX > 0 then
+        player.knockX = player.knockX - dt * force
+    elseif player.knockY < 0 then
+        player.knockX = player.knockX + dt * force
+    end
+    if player.knockY > 0 then
+        player.knockY = player.knockY - dt * force
+    elseif player.knockY < 0 then
+        player.knockY = player.knockY + dt * force
+    end
+    player.body:setLinearVelocity(player.knockX + playerVelocity.x, player.knockY + playerVelocity.y)
 end
 
 function DrawPlayer()
@@ -55,4 +71,13 @@ function DrawPlayer()
         end
         player.body:setLinearVelocity(0, 0)
     end
+end
+
+function PushPlayerBack()
+    local playerDiretion = vector2.sub(player.position, vector2.new(enemy.body:getPosition()))
+    playerDiretion = vector2.norm(playerDiretion)
+                    
+    local force = vector2.mult(playerDiretion, force)
+    player.knockX = force.x
+    player.knockY = force.y
 end

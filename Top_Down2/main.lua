@@ -4,7 +4,6 @@ require "ghost"
 require "healthbar"
 require "sprites"
 require "player_sword"
--- require "ghost_attack"
 Camera = require "Camera"
 
 local world
@@ -12,8 +11,6 @@ local ground
 local speed
 local height
 local width
-timer = 10
-hitplayer = false
 
 function love.keypressed(e)
     if e == 'escape' then
@@ -49,9 +46,10 @@ function BeginContact(fixtureA, fixtureB)
     if enemy.isChasing == true and enemy.playerInSight == true then
         if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "attack" and player.health <= 5 and player.health > 0 then
             print(fixtureA:getUserData(), fixtureB:getUserData())
-            hitplayer = true
+            enemy.timer = 1 -- tempo de cooldown para perseguir outra vez
             player.health = player.health - 1
             print("Player health = " .. player.health)
+            PushPlayerBack()
             if player.health <= 0 then
                 enemy.isChasing = false
                 player.patroling = true
@@ -62,11 +60,17 @@ function BeginContact(fixtureA, fixtureB)
         if fixtureA:getUserData() == "attack" and fixtureB:getUserData() == "melee weapon" then
             print(fixtureA:getUserData(), fixtureB:getUserData())
             enemy.health = enemy.health - 1
+            -- Testes
+            if enemy.health <= 0 then
+                    enemy.isChasing = false
+                    enemy.patroling = false
+                    -- enemy.fixture:destroy()
+                    -- trigger.fixture:destroy()
+                    -- enemy.body:destroy()
+                    print('Morreu :')
+            end
+            -- End testes
             print("Enemy health = " .. enemy.health)
-        end
-        if fixtureA:getUserData() == "attack" and fixtureB:getUserData() == "player" then
-            local force = vector2.mult(playerDiretion, 200)
-            enemy.body:setLinearVelocity(-force.x, -force.y)
         end
     end
     
@@ -79,21 +83,11 @@ function love.update(dt)
     camera:setFollowLerp(0.2)
     camera:setFollowLead(0)
     camera:setFollowStyle('TOPDOWN')
-    if hitplayer == true then        
-        timer = timer - (1 * dt)
-    end
     UpdateHealthBars()
     UpdatePlayer(dt)
     UpdatePlayerAttack()
     UpdateEnemy(dt, world)
-    -- UpdateGhostAttack()
 end
-
--- function love.keyreleased(key)
---     if (key == "e") then
---         sword.body:setAwake(false)
---     end
--- end
 
 function love.draw()
     camera:attach()

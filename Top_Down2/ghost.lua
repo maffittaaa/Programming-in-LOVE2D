@@ -22,9 +22,9 @@ function LoadEnemy(world)
     enemy.playerInSight = true
     enemy.fixture:setFriction(10)
     enemy.body:setFixedRotation(true)
-    enemy.fixture:setRestitution(3)
     enemy.position = vector2.new(enemy.body:getPosition())
     enemy.health = 4
+    enemy.timer = 0
 
     enemyRange = {}
     enemyRange.body = love.physics.newBody(world, enemy.body:getX(), enemy.body:getY(), "dynamic")
@@ -43,6 +43,10 @@ function UpdateEnemy(dt)
 
     enemyRange.body:setPosition(enemy.body:getX(), enemy.body:getY())
     enemy.range = vector2.mag(vector2.sub(enemy.position, player.position))
+    if enemy.timer > 0 then
+        enemy.timer = enemy.timer - dt
+    end
+
     if destroy_player_fixture == true then
         enemy.patroling = true
         enemy.playerInSight = false
@@ -80,7 +84,9 @@ function UpdateEnemy(dt)
         if enemy.range > 300 then
             enemy.isChasing = false
         else
-            enemy.isChasing = true
+            if enemy.timer <= 0 then 
+                enemy.isChasing = true
+            end
         end
 
         if enemy.isChasing == false then
@@ -97,17 +103,10 @@ function UpdateEnemy(dt)
                 end
                 return
             elseif lastPos > 1 then
-                if timer < 10 then
                 playerDiretion = vector2.sub(lastPposition, vector2.new(enemy.body:getPosition()))
                 playerDiretion = vector2.norm(playerDiretion)
                 local force = vector2.mult(playerDiretion, 200)
                 enemy.body:setLinearVelocity(force.x, force.y)
-                elseif timer > 10 and hitplayer == true then
-                    playerDiretion = vector2.sub(lastPposition, vector2.new(enemy.body:getPosition()))
-                    playerDiretion = vector2.norm(playerDiretion)
-                    local force = vector2.mult(playerDiretion, 200)
-                    enemy.body:setLinearVelocity(-force.x, -force.y)
-                end
             end
         elseif enemy.isChasing == true then
             --Follow player
@@ -116,6 +115,9 @@ function UpdateEnemy(dt)
             playerDiretion = vector2.norm(playerDiretion)
             local force = vector2.mult(playerDiretion, 200)
             enemy.body:setLinearVelocity(force.x, force.y)
+            if enemy.timer > 0 then
+                enemy.isChasing = false
+            end
         end
     end
 end
@@ -123,7 +125,8 @@ end
 function DrawEnemy()
     if enemy.health <= 4 and enemy.health > 0 then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.polygon("fill", enemy.body:getWorldPoints(enemy.shape:getPoints()))
+        love.graphics.draw(sprites.ghost, enemy.body:getX(), enemy.body:getY(), enemy.body:getAngle(),
+        1, 1, sprites.ghost:getWidth() / 2, sprites.ghost:getHeight() / 2)
 
         love.graphics.setColor(0, 1, 0)
         love.graphics.polygon("line", trigger.body:getWorldPoints(trigger.shape:getPoints()))
@@ -137,9 +140,11 @@ function DrawEnemy()
         if destroy_enemy_fixture == true then
             enemy.isChasing = false
             enemy.patroling = false
+            enemy.body.setPosition(-999999,-9999999)
             enemy.fixture:destroy()
             trigger.fixture:destroy()
             enemy.body:destroy()
+            print('Morreu :')
             destroy_enemy_fixture = false
         end
     end
