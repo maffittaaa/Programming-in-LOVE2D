@@ -1,25 +1,25 @@
 require "vector2"
-require "player"
+require "gary"
 require "ghost"
 
 healthbar = {}
 
 function LoadHealthBars()
-    healthbar.enemy = vector2.new(enemy.body:getX(), enemy.body:getY() + 60)
-    healthbar.player = vector2.new(player.body:getX(), player.body:getY() + 60)
+    healthbar.ghost = vector2.new(ghost.body:getX(), ghost.body:getY() + 60)
+    healthbar.gary = vector2.new(gary.body:getX(), gary.body:getY() + 60)
 end
 
 function UpdateHealthBars()
-    healthbar.enemy = vector2.new(enemy.body:getX() - 35, enemy.body:getY() - 60)
-    healthbar.player = vector2.new(player.body:getX() - 35, player.body:getY() - 60)
+    healthbar.ghost = vector2.new(ghost.body:getX() - 35, ghost.body:getY() - 60)
+    healthbar.gary = vector2.new(gary.body:getX() - 35, gary.body:getY() - 60)
 end
 
 function DrawHealthBars()
-    if player.health <= 4 and player.health > 0 then
+    if gary.health <= 5 and gary.health > 0 then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.rectangle("fill", healthbar.player.x, healthbar.player.y, 70, 10)
+        love.graphics.rectangle("fill", healthbar.gary.x, healthbar.gary.y, 70, 10)
         love.graphics.setColor(1, 0, 0)
-        love.graphics.rectangle("fill", healthbar.player.x, healthbar.player.y, 14 * player.health, 5)
+        love.graphics.rectangle("fill", healthbar.gary.x, healthbar.gary.y, 14 * gary.health, 5)
     else
         for i = #healthbar, 1, -1 do
             local num = healthbar[i]
@@ -29,11 +29,11 @@ function DrawHealthBars()
             end
         end
     end
-    if enemy.health <= 5 and enemy.health > 0 then
+    if ghost.health <= 4 and ghost.health > 0 then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.rectangle("fill", healthbar.enemy.x, healthbar.enemy.y, 70, 10)
+        love.graphics.rectangle("fill", healthbar.ghost.x, healthbar.ghost.y, 70, 10)
         love.graphics.setColor(1, 0, 0)
-        love.graphics.rectangle("fill", healthbar.enemy.x, healthbar.enemy.y, 17.5 * enemy.health, 4)
+        love.graphics.rectangle("fill", healthbar.ghost.x, healthbar.ghost.y, 17.5 * ghost.health, 4)
     else
         for i = #healthbar, 1, -1 do
             local num = healthbar[i]

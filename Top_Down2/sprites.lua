@@ -4,7 +4,9 @@ sprites = {}
 
 function LoadSprites()
     sprites.background = love.graphics.newImage("background5.jpg")
-    sprites.player = love.graphics.newImage("main_character.png")
-    sprites.sword = love.graphics.newImage("Sword_left.png")
-    sprites.ghost = love.graphics.newImage("Ghost.png")
+    sprites.gary = love.graphics.newImage("gary.png")
+    sprites.sword = love.graphics.newImage("sword.png")
+    sprites.ghost = love.graphics.newImage("ghost.png")
+    sprites.valkyrie = love.graphics.newImage("valkyrie.png")
+    sprites.key = love.graphics.newImage("Key.png")
 end

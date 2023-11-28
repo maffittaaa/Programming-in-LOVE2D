@@ -1,11 +1,11 @@
 require "vector2"
-require "player"
+require "gary"
 require "ghost"
 
 sword = {}
 
-function LoadPlayerAttack(world)
-    sword.body = love.physics.newBody(world, player.body:getX() - 40, 100, "dynamic")
+function LoadGaryAttack(world)
+    sword.body = love.physics.newBody(world, gary.body:getX() - 40, 100, "dynamic")
     sword.shape = love.physics.newRectangleShape(sprites.sword:getWidth(), sprites.sword:getHeight())
     sword.fixture = love.physics.newFixture(sword.body, sword.shape, 2)
     sword.body:setFixedRotation(true)
@@ -15,13 +15,13 @@ function LoadPlayerAttack(world)
     sword.fixture:setMask(2)
 end
 
-function UpdatePlayerAttack()
-    sword.position = vector2.new(player.body:getPosition())
-    sword.body:setPosition(player.position.x - 40, player.position.y)
+function UpdateGaryAttack()
+    sword.position = vector2.new(gary.body:getPosition())
+    sword.body:setPosition(gary.position.x - 40, gary.position.y)
 end
 
-function DrawPlayerAttack()
-    if sword.body:isActive() and player.health <= 5 and player.health > 0 then
+function DrawGaryAttack()
+    if sword.body:isActive() and gary.health <= 5 and gary.health > 0 then
         love.graphics.draw(sprites.sword, sword.body:getX(), sword.body:getY(), sword.body:getAngle(),
             1, 1, sprites.sword:getWidth() / 2, sprites.sword:getHeight() / 2)
     end
