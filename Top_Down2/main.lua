@@ -12,7 +12,7 @@ local ground
 local speed
 local height
 local width
-inventory = { key = false }
+inventory = { key = false, life = false }
 
 function love.keypressed(e)
     if e == 'escape' then
@@ -27,6 +27,7 @@ function love.keypressed(e)
     end
     if e == "f" then
         inventory.key = true
+        inventory.life = true
     end
 end
 
@@ -43,7 +44,7 @@ function love.load()
     LoadGary(world)
     LoadGaryAttack(world)
     -- LoadGhost(world)
-    LoadValkyrie(world)
+    LoadValquiria(world)
 
     camera = Camera()
 end
@@ -85,22 +86,22 @@ end
 function BeginContact(fixtureA, fixtureB)
     print(fixtureA:getUserData(), fixtureB:getUserData())
 
-    if fixtureA:getUserData() == "gary" and fixtureB:getUserData() == "MeleeAttack" then
+    if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "MelleAttack" then
         valkyrie.isRanging = true
         valkyrie.isMeleeing = true
         print("startMelee")
-    elseif fixtureA:getUserData() == "gary" and fixtureB:getUserData() == "RangedAttack" then
+    elseif fixtureA:getUserData() == "player" and fixtureB:getUserData() == "RangedAttack" then
         valkyrie.playerInSight = true
         valkyrie.isRanging = true
         valkyrie.patroling = false
         print("StartRanged")
     end
 
-    if fixtureA:getUserData() == "MeleeAttack" and fixtureB:getUserData() == "gary" then
+    if fixtureA:getUserData() == "MelleAttack" and fixtureB:getUserData() == "player" then
         valkyrie.isRanging = true
         valkyrie.isMeleeing = true
         print("starMelee")
-    elseif fixtureA:getUserData() == "RangedAttack" and fixtureB:getUserData() == "gary" then
+    elseif fixtureA:getUserData() == "RangedAttack" and fixtureB:getUserData() == "player" then
         valkyrie.playerInSight = true
         valkyrie.patroling = false
         valkyrie.isRanging = false
@@ -109,25 +110,25 @@ function BeginContact(fixtureA, fixtureB)
 end
 
 function EndContact(fixtureA, fixtureB)
-    if fixtureA:getUserData() == "gary" and fixtureB:getUserData() == "MeleeAttack" then
+    if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "MelleAttack" then
         valkyrie.isMeleeing = false
         valkyrie.isRanging = true
         print("EndMelee")
     end
 
-    if fixtureA:getUserData() == "gary" and fixtureB:getUserData() == "RangedAttack" then
+    if fixtureA:getUserData() == "player" and fixtureB:getUserData() == "RangedAttack" then
         valkyrie.isRanging = false
         valkyrie.isMeleeing = false
         print("EndRanged")
     end
 
-    if fixtureA:getUserData() == "MeleeAttack" and fixtureB:getUserData() == "gary" then
+    if fixtureA:getUserData() == "MelleAttack" and fixtureB:getUserData() == "player" then
         valkyrie.isMeleeing = false
         valkyrie.isRanging = true
         print("EndMelee")
     end
 
-    if fixtureA:getUserData() == "RangedAttack" and fixtureB:getUserData() == "gary" then
+    if fixtureA:getUserData() == "RangedAttack" and fixtureB:getUserData() == "player" then
         valkyrie.isRanging = false
         valkyrie.isMeleeing = false
         print("EndRanged")
@@ -146,14 +147,15 @@ function love.update(dt)
     UpdateGary(dt)
     UpdateGaryAttack()
     -- UpdateGhost(dt, world)
-    UpdateValquiria(dt)
+    UpdateValquiria(dt, GetPlayerPosition())
 end
 
 function love.draw()
     camera:attach()
     love.graphics.draw(sprites.background, 0, 0)
-    if inventory.key == false then
+    if inventory.key == false and inventory.life == false then
         love.graphics.draw(sprites.key, 500, 250)
+        love.graphics.draw(sprites.life, 700, 450)
     end
     DrawGary()
     DrawGaryAttack()

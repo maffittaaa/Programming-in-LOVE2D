@@ -9,19 +9,19 @@ local is_forward_backwards
 local lastPposition
 local time = 0
 
-function LoadValkyrie(world)
+function LoadValquiria(world)
   valkyriex_patrolling = 700
 
   is_forward_backwards = 1
 
-  valkyrie.body = love.physics.newBody(world, valkyriex_patrolling, 500, "dynamic")
+  valkyrie.body = love.physics.newBody(world, valkyriex_patrolling, 100, "dynamic")
   valkyrie.shape = love.physics.newRectangleShape(30, 60)
   valkyrie.fixture = love.physics.newFixture(valkyrie.body, valkyrie.shape, 1)
   valkyrie.maxvelocity = 200
   valkyrie.isMeleeing = false
   valkyrie.isRanging = false
   valkyrie.patroling = true
-  valkyrie.garyInSight = false
+  valkyrie.playerInSight = false
   valkyrie.fixture:setFriction(10)
   valkyrie.body:setFixedRotation(true)
   valkyrie.position = vector2.new(valkyrie.body:getPosition())
@@ -32,7 +32,7 @@ function LoadValkyrie(world)
   meleeRange.fixture = love.physics.newFixture(meleeRange.body, meleeRange.shape, 2)
   meleeRange.range = meleeRange.shape:getRadius()
   meleeRange.fixture:setSensor(true)
-  meleeRange.fixture:setUserData("MeleeAttack")
+  meleeRange.fixture:setUserData("MelleAttack")
 
   rangedAttack = {}
   rangedAttack.body = love.physics.newBody(world, valkyrie.body:getX(), valkyrie.body:getY(), "dynamic")
@@ -43,13 +43,13 @@ function LoadValkyrie(world)
   rangedAttack.fixture:setUserData("RangedAttack")
 end
 
-function UpdateValquiria(dt)
+function UpdateValquiria(dt, playerPosition)
   valkyrie.position = vector2.new(valkyrie.body:getPosition())
 
   meleeRange.body:setPosition(valkyrie.body:getX(), valkyrie.body:getY())
   rangedAttack.body:setPosition(valkyrie.body:getX(), valkyrie.body:getY())
 
-  valkyrie.range = vector2.mag(vector2.sub(valkyrie.position, gary.position))
+  valkyrie.range = vector2.mag(vector2.sub(valkyrie.position, playerPosition))
 
   if valkyrie.patroling == true then
     --If not in Sight, Patrol
@@ -73,23 +73,24 @@ function UpdateValquiria(dt)
     end
 
     valkyrie.body:setPosition(valkyriex_patrolling, valkyrie.body:getY())
-  elseif valkyrie.garyInSight == true then
+  elseif valkyrie.playerInSight == true then
     if valkyrie.isRanging == true then
       --stop velocity, while in rangedAttack
+
       time = 0
-      lastPposition = gary.position
+      lastPposition = playerPosition
 
       if valkyrie.isMeleeing == true then
-        local garyDiretion = vector2.sub(gary.position, vector2.new(valkyrie.body:getPosition()))
-        garyDiretion = vector2.norm(garyDiretion)
-        local force = vector2.mult(garyDiretion, 200)
+        local playerDiretion = vector2.sub(playerPosition, vector2.new(valkyrie.body:getPosition()))
+        playerDiretion = vector2.norm(playerDiretion)
+        local force = vector2.mult(playerDiretion, 200)
         valkyrie.body:setLinearVelocity(force.x, force.y)
         return
       end
       valkyrie.body:setLinearVelocity(0, 0)
       --if not meleeAttacking, do rangedAttack
     elseif valkyrie.isRanging == false then
-      --go to last location of gary
+      --go to last location of player
       local lastPos = vector2.mag(vector2.sub(valkyrie.position, lastPposition))
 
       if lastPos < 1 then
@@ -97,15 +98,15 @@ function UpdateValquiria(dt)
         valkyrie.body:setLinearVelocity(0, 0)
         if time > 2 then
           valkyrie.patroling = true
-          valkyrie.garyInSight = false
+          valkyrie.playerInSight = false
           time = 0
           return
         end
         return
       elseif lastPos > 1 then
-        local garyDiretion = vector2.sub(lastPposition, vector2.new(valkyrie.body:getPosition()))
-        garyDiretion = vector2.norm(garyDiretion)
-        local force = vector2.mult(garyDiretion, 200)
+        local playerDiretion = vector2.sub(lastPposition, vector2.new(valkyrie.body:getPosition()))
+        playerDiretion = vector2.norm(playerDiretion)
+        local force = vector2.mult(playerDiretion, 200)
         valkyrie.body:setLinearVelocity(force.x, force.y)
       end
     end
@@ -114,8 +115,9 @@ end
 
 function DrawValquiria()
   love.graphics.setColor(1, 1, 1)
-  love.graphics.draw(sprites.valkyrie, valkyrie.body:getX(), valkyrie.body:getY(), valkyrie.body:getAngle(),
-    1, 1, sprites.valkyrie:getWidth() / 2, sprites.valkyrie:getHeight() / 2)
+  love.graphics.polygon("fill", valkyrie.body:getWorldPoints(valkyrie.shape:getPoints()))
+
+
 
   love.graphics.circle("line", meleeRange.body:getX(), meleeRange.body:getY(), meleeRange.shape:getRadius())
   love.graphics.circle("line", rangedAttack.body:getX(), rangedAttack.body:getY(), rangedAttack.shape:getRadius())

@@ -11,14 +11,14 @@ function LoadGary(world)
     gary.shape = love.physics.newRectangleShape(sprites.gary:getWidth(), sprites.gary:getHeight())
     gary.fixture = love.physics.newFixture(gary.body, gary.shape, 1)
     gary.maxvelocity = 200
-    gary.fixture:setFriction(0.5)
+    gary.fixture:setFriction(1)
     gary.body:setFixedRotation(true)
     gary.fixture:setCategory(2)
     gary.fixture:setMask(2)
     gary.health = 5
     gary.knockX = 0
     gary.knockY = 0
-    gary.fixture:setUserData("gary")
+    gary.fixture:setUserData("player")
 end
 
 function UpdateGary(dt)
@@ -50,6 +50,7 @@ function UpdateGary(dt)
         gary.knockY = gary.knockY + dt * force
     end
     gary.body:setLinearVelocity(gary.knockX + garyVelocity.x, gary.knockY + garyVelocity.y)
+    -- gary.body:setLinearVelocity(garyVelocity.x, garyVelocity.y)
 end
 
 function DrawGary()

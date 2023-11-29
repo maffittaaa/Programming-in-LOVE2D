@@ -9,4 +9,5 @@ function LoadSprites()
     sprites.ghost = love.graphics.newImage("ghost.png")
     sprites.valkyrie = love.graphics.newImage("valkyrie.png")
     sprites.key = love.graphics.newImage("Key.png")
+    sprites.life = love.graphics.newImage("life.png")
 end
