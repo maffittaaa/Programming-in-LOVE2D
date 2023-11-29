@@ -10,8 +10,8 @@ Camera = require "Camera"
 local world
 local ground
 local speed
-local height
-local width
+height = love.graphics.getHeight()
+width = love.graphics.getWidth()
 inventory = { key = false, life = false }
 
 function love.keypressed(e)
@@ -36,9 +36,7 @@ function love.load()
     world = love.physics.newWorld(0, 0, true)
     world:setCallbacks(BeginContact, EndContact, nil, nil)
 
-    -- love.window.setMode(1920, 1080)
-    -- height = love.graphics.getHeight()
-    -- width = love.graphics.getWidth()
+    love.window.setMode(1920, 1080)
 
     LoadSprites()
     LoadGary(world)
